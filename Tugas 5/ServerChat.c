@@ -22,7 +22,7 @@ void send_to_all(int j, int i, int sockfd, int nbytes_recvd, char *recv_buf, fd_
 
 void send_recv(int i, fd_set *master, int sockfd, int fdmax) {
     int nbytes_recvd, j;
-    char recv_buf[BUFSIZE];
+    char recv_buf[BUFSIZE], buf[BUFSIZE];
 
     if ((nbytes_recvd = recv(i, recv_buf, BUFSIZE, 0)) <= 0) {
         if (nbytes_recvd == 0) {
@@ -42,8 +42,8 @@ void send_recv(int i, fd_set *master, int sockfd, int fdmax) {
 void connection_accept(fd_set *master, int *fdmax, int sockfd, struct sockaddr_in *client_addr) {
     socklen_t addrlen;
     int newsockfd;
+
     addrlen = sizeof(struct sockaddr_in);
-    
     if ((newsockfd = accept(sockfd, (struct sockaddr *)client_addr, &addrlen)) == -1) {
         perror("accept");
         exit(1);
@@ -58,8 +58,9 @@ void connection_accept(fd_set *master, int *fdmax, int sockfd, struct sockaddr_i
 
 void connect_request(int *sockfd, struct sockaddr_in *my_addr) {
     int yes = 1;
+
     if ((*sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        perror("socket");
+        perror("Socket");
         exit(1);
     }
 
@@ -91,6 +92,7 @@ int main() {
 
     FD_ZERO(&master);
     FD_ZERO(&read_fds);
+
     connect_request(&sockfd, &my_addr);
     FD_SET(sockfd, &master);
     fdmax = sockfd;
